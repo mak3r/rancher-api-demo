@@ -118,10 +118,20 @@ function create_cluster() {
 
 		if [ -z "$INSECURE" ]; then
 			# Fetch k8s command
-			AGENTCMD=`curl -s $RANCHER_SERVER'/v3/clusterregistrationtokens?id="'$CLUSTERID'"&limit=-1' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" | jq -r '.data[0].command' `
+
+			#This command seems to work in the v2.6 tech preview
+			#AGENTCMD=`curl -s $RANCHER_SERVER'/v3/clusterregistrationtokens?id="'$CLUSTERID'"&limit=-1' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" | jq -r '.data[0].command' `
+
+			#This command is for v2.5.8 and earlier
+			AGENTCMD=`curl -s $RANCHER_SERVER'/v3/clusterregistrationtokens?id="'$CLUSTERID'"&limit=-1' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" -X POST --data-binary '{"clusterId":"'$CLUSTERID'"}' | jq -r '.command' `
 		else
 			# Fetch insecure k8s command
-			AGENTCMD=`curl -s $RANCHER_SERVER'/v3/clusterregistrationtokens?id="'$CLUSTERID'"&limit=-1' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" $INSECURE | jq -r '.data[0].insecureCommand' `
+
+			#This command seems to work in the v2.6 tech preview
+			#AGENTCMD=`curl -s $RANCHER_SERVER'/v3/clusterregistrationtokens?id="'$CLUSTERID'"&limit=-1' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" $INSECURE | jq -r '.data[0].insecureCommand' `
+
+			#This command is for v2.5.8 and earlier
+			AGENTCMD=`curl -s $RANCHER_SERVER'/v3/clusterregistrationtokens?id="'$CLUSTERID'"&limit=-1' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" -X POST --data-binary '{"clusterId":"'$CLUSTERID'"}' $INSECURE | jq -r '.insecureCommand' `
 		fi
 	fi
 
